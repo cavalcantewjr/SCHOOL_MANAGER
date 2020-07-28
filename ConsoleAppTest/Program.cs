@@ -15,7 +15,7 @@ namespace ConsoleAppTest
                     SchoolName = "teste",
                     Adress = "Rua teste, 02"
                 };
-                SchoolDAL schoolDAL = new SchoolDAL();
+                SchoolRepository schoolDAL = new SchoolRepository();
                 Console.WriteLine($"Registrando escola {school}");
                 schoolDAL.RegisterSchool(school);
 

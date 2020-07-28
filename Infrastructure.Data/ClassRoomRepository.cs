@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Infrastructure.Data
 {
-    public class ClassRoomDAL : IClassRoomDAL
+    public class ClassRoomRepository : IClassRoomDAL
     {
         public void DeleteSchool(int id)
         {

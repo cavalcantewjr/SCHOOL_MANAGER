@@ -1,47 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Domain.Business;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 
 namespace WebAPI.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class SchoolController : ControllerBase
     {
-        // GET: api/<SchoolController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly ISchool_Business _school_Business;
+        private readonly ILogger _logger;
+
+        public SchoolController(ISchool_Business school_Business, ILogger logger)
         {
-            return new string[] { "value1", "value2" };
+            _school_Business = school_Business;
+            _logger = logger;
         }
 
-        // GET api/<SchoolController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<SchoolController>
+        [Route("AddEscola")]
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult AddSchool([FromBody] School school)
         {
+            try
+            {
+                _school_Business.InsertSchool(school);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Erro no cadastro {ex.Message}");
+            }
+            
         }
 
-        // PUT api/<SchoolController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpGet("ListAll")]
+        public List<School> ListAll()
         {
-        }
-
-        // DELETE api/<SchoolController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            try
+            {
+                return _school_Business.ListSchools();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro ao retornar liga {ex.Message}");
+                throw;
+            }
         }
     }
 }

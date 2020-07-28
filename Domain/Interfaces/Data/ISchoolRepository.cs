@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Domain.Interfaces.Data
 {
-    public interface ISchoolDAL
+    public interface ISchoolRepository
     {
         public void RegisterSchool(School school);
         public List<School> ListSchool();
-        public List<School> ListSchoolById(School school);
+        public School ListSchoolById(int id);
         public void DeleteSchool(int id);
         public void UpdateSchool(School school);
     }

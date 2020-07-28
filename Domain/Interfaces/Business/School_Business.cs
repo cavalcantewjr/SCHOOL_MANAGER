@@ -11,19 +11,19 @@ namespace Domain.Interfaces.Business
     public class School_Business : ISchool_Business
     {
         private readonly ILogger _logger;
-        private readonly ISchoolDAL _schoolDAL;
+        private readonly ISchoolRepository _schoolRepository;
 
-        public School_Business(ILogger logger, ISchoolDAL schoolDAL)
+        public School_Business(ILogger logger, ISchoolRepository schoolRepository)
         {
             _logger = logger;
-            _schoolDAL = schoolDAL;
+            _schoolRepository = schoolRepository;
         }
 
         public void InsertSchool(School school)
         {
             try
             {
-                _schoolDAL.RegisterSchool(school);
+                _schoolRepository.RegisterSchool(school);
             }
             catch (Exception ex)
             {
@@ -33,7 +33,7 @@ namespace Domain.Interfaces.Business
 
         public List<School> ListSchools()
         {
-            return _schoolDAL.ListSchool();
+            return _schoolRepository.ListSchool();
         }
     }
 }

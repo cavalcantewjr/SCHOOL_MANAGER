@@ -28,7 +28,7 @@ namespace Domain.Interfaces.Business
             catch (Exception ex)
             {
                 _logger.LogError($"Error RegisterClassRoom: {ex}");
-            }
+            } 
         }
 
         public List<ClassRoom> ListClassRooms(School school)

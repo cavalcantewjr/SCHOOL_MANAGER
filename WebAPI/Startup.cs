@@ -1,20 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Domain.Business;
+using Domain.Interfaces.Business;
+using Domain.Interfaces.Data;
+using Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 namespace WebAPI
 {
     public class Startup
     {
+        readonly string _schoolAPI = "SchoolAPI";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -22,31 +21,52 @@ namespace WebAPI
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+       
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<SchoolContext>(options =>
+                options.UseSqlServer("Data Source = SchoolDB")
+                , ServiceLifetime.Singleton);
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: _schoolAPI,
+                                  builder =>
+                                  {
+                                      builder
+                                      .WithOrigins("http://localhost:4200", "https://localhost:4200");
+                                  });
+            });
+
+
             services.AddControllers();
             services.AddMvc();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "School API",
+                    Description = "School Manager WEB API - ASP.NET Core",
+                });
+            });
+
+            //Business
+            services.AddSingleton<ISchool_Business, School_Business>();
+            services.AddSingleton<IClassRoom_Business, ClassRoom_Business>();
+
+            //Data            
+            services.AddSingleton<ISchoolRepository, SchoolRepository>();
+
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseHttpsRedirection();
-
             app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseCors(_schoolAPI);
+            app.UseSwagger();
+            app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "SchoolManager"));
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
     }
 }
